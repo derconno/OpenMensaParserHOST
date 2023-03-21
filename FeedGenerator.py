@@ -5,8 +5,8 @@ from datetime import date, timedelta
 
 mensa = LazyBuilder()
 
-def getMealsForDay(day: str):
 
+def getMealsForDay(day: str):
     if date.fromisoformat(day).weekday() > 4:  # Saturday or Sunday
         mensa.setDayClosed(date.fromisoformat(day))
         return True
@@ -20,7 +20,8 @@ def getMealsForDay(day: str):
                 text = str(div.text).replace('KENNZEICHNUNGSPFLICHTIGE ALLERGENE:', '') \
                     .replace('KENNZEICHNUNGSPFLICHTIGE ZUSATZSTOFFE:', '') \
                     .replace('SONSTIGE KENNZEICHNUNGEN:', '')
-                mensa.setLegendData(text=text, regex='(?P<name>(\d|[a-zA-Z])+)\)\s*(?P<value>([\w/]+)((\s+\w+)*[^0-9)]))')
+                mensa.setLegendData(text=text,
+                                    regex='(?P<name>(\d|[a-zA-Z])+)\)\s*(?P<value>([\w/]+)((\s+\w+)*[^0-9)]))')
 
     for table in soup.find_all('table', {'class': 'table module-food-table'}):
         category = table.find('th').text
@@ -37,6 +38,7 @@ def getMealsForDay(day: str):
                           roles=['student', 'employee', 'other'])
     return mensa.hasMealsFor(date.fromisoformat(day))
 
+
 def generateFull():
     day = date.today()
     while getMealsForDay(day.isoformat()):
@@ -45,5 +47,6 @@ def generateFull():
     with open('full.xml', 'w') as fd:
         fd.write(mensa.toXMLFeed())
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     generateFull()
