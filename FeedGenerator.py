@@ -15,8 +15,13 @@ def getMealsForDay(day: str):
         return True
 
     try:
-        html = urlopen("https://www.stw-greifswald.de/essen/speiseplaene/mensa-stralsund/?datum=" + day).read()
-    except HTTPError:
+        url = "https://www.stw-greifswald.de/essen/speiseplan/mensa-stralsund?datum=" + day
+        print(url)
+        html = urlopen(url).read()
+    except HTTPError as e:
+        if e.code == 404:
+            mensa.setDayClosed(date.fromisoformat(day))
+            return True
         return False
     soup = BeautifulSoup(html, 'html.parser')
 
@@ -45,7 +50,8 @@ def getMealsForDay(day: str):
 
 def generateFull():
     day = date.today()
-    while getMealsForDay(day.isoformat()):
+    while getMealsForDay(day.isoformat())\
+            and day <= date.today() + timedelta(days=14):
         day = day + timedelta(days=1)
 
     with open('full.xml', 'w') as fd:
