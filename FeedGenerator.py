@@ -16,7 +16,6 @@ def getMealsForDay(day: str):
 
     try:
         url = "https://www.stw-greifswald.de/essen/speiseplan/mensa-stralsund?datum=" + day
-        print(url)
         html = urlopen(url).read()
     except HTTPError as e:
         if e.code == 404:
